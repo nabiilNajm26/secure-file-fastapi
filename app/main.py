@@ -5,6 +5,7 @@ import os
 
 from app.api import auth, users, files
 from app.core.database import engine, Base
+from app.core.config import settings
 
 
 @asynccontextmanager
@@ -23,11 +24,17 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Configure CORS based on environment
+allowed_origins = ["*"] if settings.environment == "development" else [
+    "https://your-frontend-domain.com",
+    "https://www.your-frontend-domain.com"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
     allow_headers=["*"],
 )
 
