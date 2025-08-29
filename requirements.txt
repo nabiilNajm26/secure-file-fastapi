@@ -27,6 +27,9 @@ aioredis==2.0.1
 # Email (for verification)
 fastapi-mail==1.4.1
 
+# Rate limiting
+slowapi==0.1.9
+
 # Validation and settings
 pydantic==2.5.0
 pydantic-settings==2.1.0
@@ -39,6 +42,7 @@ httpx==0.25.2
 
 # Environment and utilities
 python-dotenv==1.0.0
+python-json-logger==2.0.7
 
 # Code quality
 black==23.11.0
