@@ -1,162 +1,108 @@
-# Auth & File Upload API
+# Auth & File Upload System
 
-A secure authentication system with file upload capabilities. Built to learn JWT authentication, file handling, and object storage with MinIO.
+A complete authentication system with secure file handling. Built to understand JWT patterns and file storage, but evolved into something production-ready.
+
+**🚀 Live Demo**: https://web-production-7b5e.up.railway.app  
+**📚 Interactive API Docs**: https://web-production-7b5e.up.railway.app/docs
 
 ## What it does
 
-This API handles user authentication (register, login, JWT tokens) and secure file uploads with image processing. Users can upload files to MinIO storage, and the system automatically processes images for different sizes.
+- **Secure Authentication**: JWT-based auth with refresh tokens
+- **Email Verification**: Account verification system  
+- **File Upload**: Smart validation with image optimization
+- **Rate Limiting**: Prevents abuse with Redis-based limiting
+- **Production Ready**: Deployed on Railway with comprehensive error handling
 
-## Tech Stack
+## Quick Start
 
-- FastAPI (web framework)
-- PostgreSQL (user data)
-- Redis (caching, sessions)
-- MinIO (S3-compatible file storage)
-- JWT (authentication)
-- Pillow (image processing)
-- Docker (everything containerized)
-
-## Features (planned)
-
-- User registration with email verification
-- JWT access & refresh tokens
-- Password hashing and validation
-- File upload with type/size validation
-- Automatic image resizing and thumbnails
-- Secure file serving with permissions
-- File metadata tracking
-- User profile management
-
-## Quick start
-
-**Prerequisites:**
-- Docker and docker-compose
-- Or: Python 3.11+, PostgreSQL, Redis, MinIO
-
-**With Docker (recommended):**
 ```bash
 git clone https://github.com/your-username/project-2-auth-file-api.git
 cd project-2-auth-file-api
 docker-compose up -d
 ```
 
-**Services will be available at:**
-- API: http://localhost:8001
-- API Docs: http://localhost:8001/docs
-- MinIO Console: http://localhost:9001 (minioadmin/minioadmin)
-- PostgreSQL: localhost:5433
-- Redis: localhost:6379
+Visit http://localhost:8001/docs to explore the API.
 
-**Manual setup:**
+## Features
+
+✅ JWT authentication (access + refresh)  
+✅ Email verification system  
+✅ Secure file uploads with validation  
+✅ Automatic image thumbnails  
+✅ Rate limiting & error handling  
+✅ Storage fallback system  
+✅ Production deployment
+
+## Documentation
+
+- **[API Reference](docs/API.md)** - Complete endpoint documentation
+- **[Deployment Guide](docs/DEPLOYMENT.md)** - Docker, Railway, and manual setup
+- **[Development Guide](docs/DEVELOPMENT.md)** - Architecture and development workflow
+
+## Try it Live
+
+**Quick test** (no setup needed):
+1. Visit https://web-production-7b5e.up.railway.app/docs
+2. Register → Login → Upload files
+3. Use the "Authorize" button with your JWT token
+
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Copy and edit environment file
-cp .env.example .env
-# Edit .env with your settings
-
-# Run with uvicorn
-uvicorn app.main:app --reload --port 8001
+# Quick curl test
+curl -X POST "https://web-production-7b5e.up.railway.app/api/v1/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","username":"testuser","password":"SecurePass123!","full_name":"Test User"}'
 ```
 
-## Project structure
+## Tech Stack
 
-```
-app/
-├── main.py              # FastAPI app
-├── api/                 # Route handlers
-│   ├── auth.py          # Authentication routes
-│   ├── users.py         # User management
-│   └── files.py         # File upload/download
-├── core/                # Core functionality
-│   ├── config.py        # Settings
-│   ├── database.py      # DB connection
-│   ├── security.py      # JWT & password handling
-│   └── storage.py       # MinIO client
-├── models/              # Database models
-│   ├── user.py          # User model
-│   └── file.py          # File metadata model
-├── schemas/             # Pydantic models
-│   ├── auth.py          # Auth request/response
-│   ├── user.py          # User schemas
-│   └── file.py          # File schemas
-├── services/            # Business logic
-│   ├── auth_service.py  # Authentication logic
-│   ├── user_service.py  # User operations
-│   └── file_service.py  # File operations
-└── utils/               # Utilities
-    ├── email.py         # Email sending
-    └── image.py         # Image processing
-```
+**Backend**: FastAPI + PostgreSQL + Redis + MinIO  
+**Frontend**: Next.js 15 + TypeScript + Tailwind CSS *(planned)*  
+**Deployment**: Railway + Docker  
+**Security**: JWT + bcrypt + Rate limiting  
 
-## Environment variables
+## What's Next: Frontend Development
 
-Key settings (see .env.example for full list):
+🎯 **Goal**: Build a modern, responsive frontend to complete the full-stack application.
 
-```env
-# Database
-DATABASE_URL=postgresql://postgres:postgres123@localhost:5433/auth_file_api
+### Planned Frontend Stack
+- **Next.js 15** with App Router
+- **TypeScript** for type safety
+- **Tailwind CSS** for styling
+- **React Query** for server state
+- **Zustand** for client state
+- **React Hook Form + Zod** for forms
 
-# JWT
-JWT_SECRET_KEY=your-super-secret-key
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
+### Development Phases
 
-# MinIO
-MINIO_ENDPOINT=localhost:9000
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin
+**Phase 1: Foundation**
+- Setup Next.js project with TypeScript & Tailwind
+- Create base layout and routing structure
+- Build authentication forms (login/register)
 
-# File uploads
-MAX_FILE_SIZE=10485760  # 10MB
-ALLOWED_EXTENSIONS=jpg,jpeg,png,gif,pdf,txt,doc,docx
-```
+**Phase 2: Integration**
+- API client setup with Axios
+- JWT token management and refresh
+- Route protection middleware
+- Connect auth forms to backend
 
-## API endpoints (planned)
+**Phase 3: File Management**
+- File upload component with drag & drop
+- User dashboard for file management
+- File list, preview, and actions
+- Real-time upload progress
 
-### Authentication
-- POST `/auth/register` - Register new user
-- POST `/auth/login` - Login user
-- POST `/auth/refresh` - Refresh access token
-- POST `/auth/logout` - Logout user
-- POST `/auth/forgot-password` - Request password reset
-- POST `/auth/reset-password` - Reset password
+**Phase 4: Polish**
+- Responsive design optimization
+- Loading states and error handling
+- Toast notifications and animations
+- Dark mode support
 
-### Users
-- GET `/users/me` - Get current user profile
-- PUT `/users/me` - Update profile
-- POST `/users/verify-email` - Verify email address
+### Key Features
+✅ **Backend API Ready** - All endpoints implemented  
+🔄 **Frontend Planning** - Detailed roadmap created  
+⏳ **Next.js Setup** - Ready to begin development  
+⏳ **Auth Interface** - Login/register forms  
+⏳ **File Dashboard** - Upload and management UI  
+⏳ **Production Deploy** - Frontend deployment to Vercel  
 
-### Files
-- POST `/files/upload` - Upload file(s)
-- GET `/files/` - List user's files
-- GET `/files/{file_id}` - Download file
-- DELETE `/files/{file_id}` - Delete file
-- GET `/files/{file_id}/info` - Get file metadata
-
-## What I'm learning
-
-- JWT authentication patterns (access + refresh tokens)
-- File upload handling and validation
-- Image processing with Pillow
-- MinIO S3-compatible storage
-- Redis for caching and sessions
-- Email integration for verification
-- More advanced FastAPI features
-
-## Development plan
-
-1. ✅ Basic project setup and structure
-2. ⏳ Database models (User, File)
-3. ⏳ Authentication system (JWT)
-4. ⏳ File upload endpoints
-5. ⏳ Image processing
-6. ⏳ Email verification
-7. ⏳ File permissions and sharing
-8. ⏳ Testing and deployment
-
-## Notes
-
-This is a learning project to understand authentication patterns and file handling. The code structure is more complex than needed for a simple app, but it's designed to practice larger application architecture.
-
-Currently just the basic setup - the actual auth and file features are coming soon!
+---
