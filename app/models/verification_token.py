@@ -21,7 +21,7 @@ class VerificationToken(Base):
     
     @classmethod
     def generate_token(cls):
-        return secrets.urlsafe_token(32)
+        return secrets.token_urlsafe(32)
     
     @classmethod
     def create_email_verification_token(cls, user_id: int):

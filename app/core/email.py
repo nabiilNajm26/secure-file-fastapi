@@ -10,12 +10,12 @@ logger = logging.getLogger(__name__)
 
 class EmailService:
     def __init__(self):
-        self.smtp_host = settings.SMTP_HOST
-        self.smtp_port = settings.SMTP_PORT
-        self.smtp_user = settings.SMTP_USER
-        self.smtp_password = settings.SMTP_PASSWORD
-        self.from_email = settings.FROM_EMAIL
-        self.app_name = settings.APP_NAME
+        self.smtp_host = settings.smtp_host
+        self.smtp_port = settings.smtp_port
+        self.smtp_user = settings.smtp_user
+        self.smtp_password = settings.smtp_password
+        self.from_email = settings.from_email
+        self.app_name = settings.app_name
 
     def send_email(
         self,
@@ -49,7 +49,7 @@ class EmailService:
             return False
 
     def send_verification_email(self, to_email: str, token: str) -> bool:
-        verification_url = f"{settings.FRONTEND_URL}/verify-email?token={token}"
+        verification_url = f"{settings.frontend_url}/verify-email?token={token}"
         
         subject = f"Verify your email for {self.app_name}"
         
@@ -102,7 +102,7 @@ Best regards,
         return self.send_email(to_email, subject, body, html_body)
 
     def send_password_reset_email(self, to_email: str, token: str) -> bool:
-        reset_url = f"{settings.FRONTEND_URL}/reset-password?token={token}"
+        reset_url = f"{settings.frontend_url}/reset-password?token={token}"
         
         subject = f"Password Reset for {self.app_name}"
         

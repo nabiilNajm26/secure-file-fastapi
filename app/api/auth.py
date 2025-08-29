@@ -98,7 +98,7 @@ def verify_email(
 @router.post("/resend-verification")
 @limiter.limit("3 per minute")
 def resend_verification(
-    request_obj: Request,
+    request: Request,
     email_request: EmailRequest,
     db: Session = Depends(get_db)
 ):
@@ -114,7 +114,7 @@ def resend_verification(
 @router.post("/forgot-password")
 @limiter.limit("3 per minute")
 def forgot_password(
-    request_obj: Request,
+    request: Request,
     email_request: EmailRequest,
     db: Session = Depends(get_db)
 ):
@@ -125,7 +125,7 @@ def forgot_password(
 @router.post("/reset-password")
 @limiter.limit("5 per minute")
 def reset_password(
-    request_obj: Request,
+    request: Request,
     reset_request: PasswordResetRequest,
     db: Session = Depends(get_db)
 ):
