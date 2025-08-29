@@ -24,12 +24,14 @@ class Settings(BaseSettings):
     minio_bucket_name: str = Field(default="uploads", env="MINIO_BUCKET_NAME")
     
     # Email
-    mail_username: Optional[str] = Field(None, env="MAIL_USERNAME")
-    mail_password: Optional[str] = Field(None, env="MAIL_PASSWORD")
-    mail_from: str = Field(default="noreply@example.com", env="MAIL_FROM")
-    mail_port: int = Field(default=587, env="MAIL_PORT")
-    mail_server: str = Field(default="smtp.gmail.com", env="MAIL_SERVER")
-    mail_from_name: str = Field(default="Auth File API", env="MAIL_FROM_NAME")
+    smtp_host: str = Field(default="smtp.gmail.com", env="SMTP_HOST")
+    smtp_port: int = Field(default=587, env="SMTP_PORT")
+    smtp_user: Optional[str] = Field(None, env="SMTP_USER")
+    smtp_password: Optional[str] = Field(None, env="SMTP_PASSWORD")
+    from_email: str = Field(default="noreply@example.com", env="FROM_EMAIL")
+    
+    # Frontend URL for email links
+    frontend_url: str = Field(default="http://localhost:3000", env="FRONTEND_URL")
     
     # File Upload
     max_file_size: int = Field(default=10485760, env="MAX_FILE_SIZE")  # 10MB
@@ -37,6 +39,7 @@ class Settings(BaseSettings):
     upload_dir: str = Field(default="uploads", env="UPLOAD_DIR")
     
     # App
+    app_name: str = Field(default="Auth File API", env="APP_NAME")
     environment: str = Field(default="development", env="ENVIRONMENT")
     debug: bool = Field(default=False, env="DEBUG")
     

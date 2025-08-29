@@ -2,9 +2,14 @@ from typing import Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from app.core import security
+from app.core.email import email_service
 from app.models.user import User
+from app.models.verification_token import VerificationToken
 from app.schemas.auth import Token, RegisterRequest
 from app.schemas.user import UserCreate
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AuthService:
@@ -44,6 +49,17 @@ class AuthService:
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
+        
+        # Create and send verification email
+        verification_token = VerificationToken.create_email_verification_token(db_user.id)
+        db.add(verification_token)
+        db.commit()
+        
+        try:
+            email_service.send_verification_email(db_user.email, verification_token.token)
+        except Exception as e:
+            logger.error(f"Failed to send verification email: {str(e)}")
+        
         return db_user
     
     @staticmethod
@@ -72,3 +88,80 @@ class AuthService:
         
         user = db.query(User).filter(User.id == int(user_id)).first()
         return user if user and user.is_active else None
+    
+    @staticmethod
+    def verify_email(db: Session, token: str) -> bool:
+        verification_token = db.query(VerificationToken).filter(
+            VerificationToken.token == token,
+            VerificationToken.token_type == "email_verification"
+        ).first()
+        
+        if not verification_token or not verification_token.is_valid():
+            return False
+        
+        user = verification_token.user
+        user.is_verified = True
+        verification_token.used = True
+        
+        db.commit()
+        return True
+    
+    @staticmethod
+    def request_password_reset(db: Session, email: str) -> bool:
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            return False
+        
+        # Create password reset token
+        reset_token = VerificationToken.create_password_reset_token(user.id)
+        db.add(reset_token)
+        db.commit()
+        
+        try:
+            email_service.send_password_reset_email(user.email, reset_token.token)
+            return True
+        except Exception as e:
+            logger.error(f"Failed to send password reset email: {str(e)}")
+            return False
+    
+    @staticmethod
+    def reset_password(db: Session, token: str, new_password: str) -> bool:
+        verification_token = db.query(VerificationToken).filter(
+            VerificationToken.token == token,
+            VerificationToken.token_type == "password_reset"
+        ).first()
+        
+        if not verification_token or not verification_token.is_valid():
+            return False
+        
+        user = verification_token.user
+        user.hashed_password = security.get_password_hash(new_password)
+        verification_token.used = True
+        
+        db.commit()
+        return True
+    
+    @staticmethod
+    def resend_verification_email(db: Session, email: str) -> bool:
+        user = db.query(User).filter(User.email == email).first()
+        if not user or user.is_verified:
+            return False
+        
+        # Invalidate previous tokens
+        db.query(VerificationToken).filter(
+            VerificationToken.user_id == user.id,
+            VerificationToken.token_type == "email_verification",
+            VerificationToken.used == False
+        ).update({"used": True})
+        
+        # Create new token
+        verification_token = VerificationToken.create_email_verification_token(user.id)
+        db.add(verification_token)
+        db.commit()
+        
+        try:
+            email_service.send_verification_email(user.email, verification_token.token)
+            return True
+        except Exception as e:
+            logger.error(f"Failed to resend verification email: {str(e)}")
+            return False
