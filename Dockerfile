@@ -26,8 +26,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Create uploads directory
-RUN mkdir -p uploads
+# Create uploads and logs directories
+RUN mkdir -p uploads logs
 
 # Create non-root user for security
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
