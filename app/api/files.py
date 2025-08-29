@@ -160,6 +160,42 @@ def get_file_info(
     return file
 
 
+@router.get("/download/{filename}")
+def download_file_by_name(
+    filename: str,
+    db: Session = Depends(get_db),
+):
+    # Find file by filename
+    file = db.query(FileModel).filter(FileModel.filename == filename).first()
+    
+    if not file:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File not found"
+        )
+    
+    # Get file from storage
+    file_data = storage_client.download_file(file.file_path)
+    
+    if not file_data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File not found in storage"
+        )
+    
+    # Increment download count
+    FileService.increment_download_count(db, file)
+    
+    # Return file
+    return StreamingResponse(
+        io.BytesIO(file_data),
+        media_type=file.content_type,
+        headers={
+            "Content-Disposition": f"attachment; filename={file.original_filename}"
+        }
+    )
+
+
 @router.get("/{file_id}/download")
 def download_file(
     file_id: int,
